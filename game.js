@@ -3,6 +3,7 @@
  */
 
 var stage;
+const ENEMIES_COUNT = 5;
 
 function init() {
     stage = new createjs.Stage("demoCanvas");
@@ -16,39 +17,30 @@ function init() {
 }
 
 function addAssets() {
-    var circle = new createjs.Shape();
-    circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
-    circle.x = 100;
-    circle.y = 100;
-    stage.addChild(circle);
+    var objects = [];
 
-    var circle1 = new createjs.Shape();
-    circle1.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
-    circle1.x = 100;
-    circle1.y = 100;
-    stage.addChild(circle1);
+    for (var i = 0; i < ENEMIES_COUNT; i++) {
+        var circle = new createjs.Shape();
+        circle.graphics.beginFill("rgb(255,0,0)").drawRoundRect(0, 0, 50, 35, 10);
+        circle.x = 0;
+        circle.y = 0;
 
-    var circle2 = new createjs.Shape();
-    circle2.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
-    circle2.x = 100;
-    circle2.y = 100;
-    stage.addChild(circle2);
+        objects.push(circle);
+    }
 
-    return [circle, circle1, circle2];
+    objects.forEach(function (object){
+        stage.addChild(object);
+    });
+
+    return objects;
 }
 
 function applyAnimations(objects) {
     objects.forEach(function (object, index) {
-        console.log(object + "," + index + ", " + (1000 / (index + 1)));
-        createjs.Tween.get(object, {loop: true})
-            .to({x:400}, (1000 / (index + 1)), createjs.Ease.getPowInOut(4))
-            .to({alpha:0, y:175}, 500 / (index + 1), createjs.Ease.getPowInOut(2))
-            .to({alpha:0, y:225}, 100 / (index + 1))
-            .to({alpha:1, y:200}, 500 / (index + 1), createjs.Ease.getPowInOut(2))
-            .to({x:100}, 800, createjs.Ease.getPowInOut(2));
-    });
+        object.y = 60 * index;
 
-    // for (var object in objects) {
-    //
-    // }
+        createjs.Tween.get(object, {loop: true})
+            .to({x:400}, 3000 / (index + 1), createjs.Ease.getPowInOut(2))
+            .to({x:0}, 2000 / (index + 1), createjs.Ease.getPowInOut(2));
+    });
 }
