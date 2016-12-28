@@ -21,7 +21,8 @@ function init() {
 
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", stage);
-    createjs.Ticker.addEventListener("tick", missileCollisionTest);
+    createjs.Ticker.addEventListener("tick", missileToEnemyCollisionDetection);
+    createjs.Ticker.addEventListener("tick", displayWinningMessage);
 }
 
 function addEnemyAssets() {
@@ -84,25 +85,35 @@ function heroFire() {
         });
 }
 
-function missileCollisionTest() {
+function missileToEnemyCollisionDetection() {
     missiles.forEach(function (missile){
-        enemies.forEach(function (enemy, index) {
-            // if (index == 0) {
-            //     console.log("missile - x: " + missile.x + ", y: " + missile.y);
-            //     console.log("enemy - x: " + enemy.x + ", y: " + enemy.y);
-            // }
-
-            console.log("missile - x: " + missile.x + ", y: " + missile.y);
-
+        enemies.forEach(function (enemy) {
             var withinEnemyWidth = missile.x >= enemy.x && missile.x <= enemy.x + SHAPE_WIDTH;
             var withinEnemyHeight = missile.y >= enemy.y && missile.y <= enemy.y + SHAPE_HEIGHT;
 
             if (withinEnemyWidth && withinEnemyHeight) {
-                console.log("hit!!!");
-                stage.removeChild(enemy);
+                enemy.hit = true;
+
+                createjs.Tween.get(enemy, {loop: false})
+                    .to({alpha: 0}, 500, createjs.Ease.getPowInOut(2))
+                    .call(function (){
+                        stage.removeChild(enemy);
+                    });
             }
         });
     });
+}
+
+function displayWinningMessage() {
+    if (enemies.some(e => !e.hit)) {
+        return;
+    }
+
+    var text = new createjs.Text("You Win!!!", "40px Arial", "silver");
+    text.x = SCREEN_WIDTH / 2 - 70;
+    text.y = SCREEN_HEIGHT /2 - 20;
+
+    stage.addChild(text);
 }
 
 function keyPressed(event) {
