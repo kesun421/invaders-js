@@ -4,6 +4,7 @@
 
 var stage;
 var hero, enemies = [], missiles = [];
+var gameOver = false;
 const SCREEN_WIDTH = 500, SCREEN_HEIGHT = 500;
 const ENEMIES_COUNT = 8;
 const SHAPE_WIDTH = 50, SHAPE_HEIGHT = 25, SHAPE_RADIUS = 10;
@@ -66,7 +67,7 @@ function createHeroAsset() {
 function heroFire() {
     var x = hero.x + SHAPE_WIDTH / 2;
     var y = hero.y;
-    const MISSILE_RADIUS = 10;
+    const MISSILE_RADIUS = 5;
 
     var missile = new createjs.Shape();
     missile.graphics.beginFill("rgb(125,125,125)").drawCircle(0, 0, MISSILE_RADIUS);
@@ -105,13 +106,15 @@ function missileToEnemyCollisionDetection() {
 }
 
 function displayWinningMessage() {
-    if (enemies.some(e => !e.hit)) {
+    if (enemies.some(e => !e.hit) || gameOver) {
         return;
     }
 
+    gameOver = true;
+
     var text = new createjs.Text("You Win!!!", "40px Arial", "silver");
     text.x = SCREEN_WIDTH / 2 - 70;
-    text.y = SCREEN_HEIGHT /2 - 20;
+    text.y = SCREEN_HEIGHT / 2 - 20;
 
     stage.addChild(text);
 }
