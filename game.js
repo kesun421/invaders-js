@@ -3,7 +3,7 @@
  */
 
 var stage;
-var hero, enemies, missiles;
+var hero, enemies = [], missiles = [];
 const SCREEN_WIDTH = 500, SCREEN_HEIGHT = 500;
 const ENEMIES_COUNT = 8;
 const SHAPE_WIDTH = 50, SHAPE_HEIGHT = 25, SHAPE_RADIUS = 10;
@@ -25,8 +25,6 @@ function init() {
 }
 
 function addEnemyAssets() {
-    enemies = [];
-
     for (var i = 0; i < ENEMIES_COUNT; i++) {
         var circle = new createjs.Shape();
         circle.graphics.beginFill("rgb(255,0,0)").drawRoundRect(0, 0, SHAPE_WIDTH, SHAPE_HEIGHT, SHAPE_RADIUS);
@@ -65,48 +63,42 @@ function createHeroAsset() {
 }
 
 function heroFire() {
-    if (missiles == null) {
-        missiles = [];
-    }
-
     var x = hero.x + SHAPE_WIDTH / 2;
     var y = hero.y;
     const MISSILE_RADIUS = 10;
 
     var missile = new createjs.Shape();
-    missile.graphics.beginFill("rgb(125,125,125)").drawCircle(x, y, MISSILE_RADIUS);
+    missile.graphics.beginFill("rgb(125,125,125)").drawCircle(0, 0, MISSILE_RADIUS);
+    missile.x = x;
+    missile.y = y;
 
     missiles.push(missile);
 
     stage.addChild(missile);
 
     createjs.Tween.get(missile, {loop: false})
-        .to({y: -SCREEN_HEIGHT}, 1000, createjs.Ease.getPowInOut(2))
+        .to({y: 0}, 1000, createjs.Ease.getPowInOut(2))
         .call(function (){
-            missiles.pop(missile);
             stage.removeChild(missile);
+            missiles.splice(0, 1); // Clean up to avoid overloading...
         });
 }
 
 function missileCollisionTest() {
-    if (missiles == null || enemies == null)
-        return;
-
     missiles.forEach(function (missile){
-        // console.log("missile - x: " + missile.x + ", y: " + missile.y);
+        enemies.forEach(function (enemy, index) {
+            // if (index == 0) {
+            //     console.log("missile - x: " + missile.x + ", y: " + missile.y);
+            //     console.log("enemy - x: " + enemy.x + ", y: " + enemy.y);
+            // }
 
-        enemies.forEach(function (enemy){
-            console.log("enemy - x: " + enemy.x + ", y: " + enemy.y);
+            console.log("missile - x: " + missile.x + ", y: " + missile.y);
 
-            var pt = missile.localToLocal(missile.x, missile.y, enemy);
+            var withinEnemyWidth = missile.x >= enemy.x && missile.x <= enemy.x + SHAPE_WIDTH;
+            var withinEnemyHeight = missile.y >= enemy.y && missile.y <= enemy.y + SHAPE_HEIGHT;
 
-            console.log("missile - x: " + pt.x + ", y: " + pt.y);
-
-            if (enemy.hitTest(pt.x, pt.y)) {
-
+            if (withinEnemyWidth && withinEnemyHeight) {
                 console.log("hit!!!");
-                console.log("enemy hit: " + enemy);
-                enemies.pop(enemy);
                 stage.removeChild(enemy);
             }
         });
