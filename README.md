@@ -4,4 +4,6 @@ This is the first app I wrote using JavaScript - a simple clone of the space inv
 
 Use left and right arrows to move, and space bar to fire.  Destroy all red objects to win the game.
 
-<img src="https://github.com/kesun421/invaders-js/blob/master/invadersjs.gif?raw=true" width="444" height="440">
+### Demo
+
+<img src="https://github.com/kesun421/invaders-js/blob/master/demo.gif?raw=true" width="444" height="440">
